@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 const BikeSchema = require('./Model/Model');
 const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3000; // Use the port from the environment variable or fallback to 3000
+const PORT = process.env.PORT || 3000; 
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow only this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
     credentials: true // Enable credentials if needed
 }));
@@ -35,6 +34,7 @@ app.post('/newbike', async (req, res) => {
     }
 });
 
+
 // Get method
 app.get('/getbikes', async (req, res) => {
     try {
@@ -56,6 +56,20 @@ app.get('/getbikes/:id', async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 });
+
+// Update bike by ID
+app.put('/updatebike/:id', async (req, res) => {
+    const { bikename, bikeprice, bikecolor } = req.body;
+    try {
+      await BikeSchema.findByIdAndUpdate(req.params.id, { bikename, bikeprice, bikecolor });
+      const bikes = await BikeSchema.find();
+      return res.json(bikes);
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+  
 
 // Delete Method
 app.delete('/deletebike/:id', async (req, res) => {
